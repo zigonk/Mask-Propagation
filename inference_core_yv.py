@@ -64,7 +64,7 @@ class InferenceCore:
         result = self.prop_net.get_query_values(self.images[:,idx].cuda())
         return result
 
-    def do_pass(self, key_k, key_v, idx, end_idx):
+    def do_pass(self, key_k, key_v, idx, end_idx, forward=True):
         """
         key_k, key_v - Memory feature of the starting frame
         idx - Frame index of the starting frame
@@ -89,9 +89,14 @@ class InferenceCore:
         last_ti = idx
 
         # Note that we never reach closest_ti, just the frame before it
-        this_range = range(idx+1, closest_ti)
-        step = +1
-        end = closest_ti - 1
+        if forward:
+            this_range = range(idx+1, closest_ti)
+            step = +1
+            end = closest_ti - 1
+        else:
+            this_range = range(idx-1, 0, -1)
+            step = -1
+            end = closest_ti + 1
 
         for ti in this_range:
             if prev_in_mem:
@@ -157,4 +162,5 @@ class InferenceCore:
         key_k, key_v = self.prop_net.memorize(self.images[:,frame_idx].cuda(), self.prob[self.enabled_obj,frame_idx].cuda())
 
         # Propagate
-        self.do_pass(key_k, key_v, frame_idx, end_idx)
+        self.do_pass(key_k, key_v, frame_idx, end_idx, forward=True)
+        self.do_pass(key_k, key_v, frame_idx, end_idx, forward=False)
