@@ -94,9 +94,9 @@ class InferenceCore:
             step = +1
             end = closest_ti - 1
         else:
-            this_range = range(idx-1, 0, -1)
+            this_range = range(idx-1, -1, -1)
             step = -1
-            end = closest_ti + 1
+            end = 0
 
         for ti in this_range:
             if prev_in_mem:
