@@ -86,9 +86,9 @@ for data in progressbar(test_loader, max_value=len(test_loader), redirect_stdout
     processor = InferenceCore(prop_model, rgb, num_objects=k)
     # min_idx tells us the starting point of propagation
     # Propagating before there are labels is not useful
-    min_idx = 99999
+    min_idx = 0
     for i, frame_idx in enumerate(frames_with_gt):
-        min_idx = min(frame_idx, min_idx)
+        # min_idx = min(frame_idx, min_idx)
         # Note that there might be more than one label per frame
         obj_idx = gt_obj[frame_idx][0].tolist()
         # Map the possibly non-continuous labels into a continuous scheme
