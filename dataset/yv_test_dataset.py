@@ -41,8 +41,7 @@ class YouTubeVOSTestDataset(Dataset):
 
             self.videos.append(vid)
             first_frame = np.array(Image.open(path.join(self.image_dir, vid, frames[0])))
-            self.shape[vid] = np.shape(first_frame)
-            print(self.shape[vid])
+            self.shape[vid] = np.shape(first_frame)[:2]
             # first_mask = os.listdir(path.join(self.mask_dir, vid))[0]
             # _mask = np.array(Image.open(path.join(self.mask_dir, vid, first_mask)).convert("P"))
             # self.shape[vid] = np.shape(_mask)
