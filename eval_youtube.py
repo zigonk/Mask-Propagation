@@ -93,6 +93,7 @@ for data in progressbar(test_loader, max_value=len(test_loader), redirect_stdout
     gt_obj = info['gt_obj']
     size = info['size']
     eid = info['exp_id'][0]
+    first_frame_id = info['frames'][0][0]
     print('Processing video ', name, '_', eid)
     torch.cuda.synchronize()
     process_begin = time.time()
@@ -153,7 +154,7 @@ for data in progressbar(test_loader, max_value=len(test_loader), redirect_stdout
     os.makedirs(this_out_path, exist_ok=True)
     export_frames = meta_exp['videos'][name]['frames']
     for fid in export_frames:
-        f = int(fid)
+        f = int(fid) - int(first_frame_id)
         img_E = Image.fromarray(idx_masks[f])
         img_E.putpalette(palette)
         img_E.convert('L')
