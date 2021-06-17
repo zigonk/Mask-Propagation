@@ -82,7 +82,7 @@ class YouTubeVOSTestDataset(Dataset):
             
             if f == mask_id + '.jpg':
                 mask_file = path.join(vid_gt_path, f'{mask_id}.png')
-                mask = np.array(Image.open(mask_file).resize(self.shape[video], resample=Image.NEAREST).convert('P'), dtype=np.uint8)
+                mask = np.array(Image.open(mask_file).resize(self.shape[video][::-1], resample=Image.NEAREST).convert('P'), dtype=np.uint8)
                 print(mask.shape)
                 masks.append(mask)
                 this_labels = np.unique(masks[-1])
