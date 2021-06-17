@@ -44,6 +44,7 @@ parser.add_argument('--output')
 parser.add_argument('--split', default='valid')
 parser.add_argument('--use_km', action='store_true')
 parser.add_argument('--no_top', action='store_true')
+parser.add_argument('--num_workers', default=0)
 args = parser.parse_args()
 
 yv_path = args.yv
@@ -69,7 +70,7 @@ torch.autograd.set_grad_enabled(False)
 
 # Setup Dataset
 test_dataset = YouTubeVOSTestDataset(data_root=yv_path, split=args.split, mask_root = mask_root, metadata=metadata, in_range = in_range)
-test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=2)
+test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=args.num_workers)
 
 # Load our checkpoint
 prop_saved = torch.load(args.model)
