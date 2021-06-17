@@ -64,7 +64,6 @@ class YouTubeVOSTestDataset(Dataset):
         info = {}
         info['name'] = video
         info['exp_id'] = eid
-        print(eid)
         info['num_objects'] = 0
         info['frames'] = self.frames[video] 
         info['size'] = self.shape[video] # Real sizes
