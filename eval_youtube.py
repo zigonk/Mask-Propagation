@@ -94,7 +94,11 @@ for data in progressbar(test_loader, max_value=len(test_loader), redirect_stdout
     size = info['size']
     eid = info['exp_id'][0]
     first_frame_id = info['frames'][0][0].split('.')[0]
+    skip = data['skip']
     print('Processing video ', name, '_', eid)
+    if skip:
+        print('No available mask')
+        continue
     torch.cuda.synchronize()
     process_begin = time.time()
 

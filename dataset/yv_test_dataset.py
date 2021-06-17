@@ -61,8 +61,6 @@ class YouTubeVOSTestDataset(Dataset):
         video = data_info['video_id']
         eid = data_info['exp_id']
         mask_id = data_info['mask_id']
-        if (mask_id == 0):
-            mask_id = '00000'
         info = {}
         info['name'] = video
         info['exp_id'] = eid
@@ -73,6 +71,11 @@ class YouTubeVOSTestDataset(Dataset):
 
         vid_im_path = path.join(self.image_dir, video)
         vid_gt_path = path.join(self.mask_dir, video, eid)
+
+        skip = False
+        if (mask_id == 0):
+            mask_id = '00000'
+            skip = True
 
         frames = self.frames[video]
 
@@ -120,6 +123,7 @@ class YouTubeVOSTestDataset(Dataset):
             'rgb': images,
             'gt': masks,
             'info': info,
+            'skip': skip
         }
 
         return data
