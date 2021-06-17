@@ -69,7 +69,7 @@ torch.autograd.set_grad_enabled(False)
 
 # Setup Dataset
 test_dataset = YouTubeVOSTestDataset(data_root=yv_path, split=args.split, mask_root = mask_root, metadata=metadata, in_range = in_range)
-test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=2)
+test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
 # Load our checkpoint
 prop_saved = torch.load(args.model)
