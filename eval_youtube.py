@@ -39,7 +39,7 @@ parser.add_argument('--yv', default='../YouTube')
 parser.add_argument('--mask', default=None)
 parser.add_argument('--metadata', default=None, help='metadata is used for dataloader')
 parser.add_argument('--meta_exp', default=None, help='meta expression is used for export mask')
-parser.add_argument('--in_range', default=None)
+parser.add_argument('--in_range', default=None, nargs='+', type=int)
 parser.add_argument('--output')
 parser.add_argument('--split', default='valid')
 parser.add_argument('--use_km', action='store_true')
@@ -53,7 +53,7 @@ metadata = args.metadata
 meta_exp_path = args.meta_exp
 
 in_range = None
-if args.slice is not None:
+if args.in_range is not None:
     in_range = slice(args.in_range[0], args.in_range[1], 1)
 
 meta_exp = {}
