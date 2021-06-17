@@ -26,7 +26,7 @@ class YouTubeVOSTestDataset(Dataset):
         else:
             self.mask_dir = mask_root
         with open(metadata) as f:
-            self.metadata = sorted(json.load(f))
+            self.metadata = json.load(f)
         if in_range is not None:
             self.metadata = self.metadata[in_range]
         self.videos = []
