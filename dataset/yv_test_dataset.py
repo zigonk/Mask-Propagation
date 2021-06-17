@@ -80,15 +80,15 @@ class YouTubeVOSTestDataset(Dataset):
             img = Image.open(path.join(vid_im_path, f)).convert('RGB')
             images.append(self.im_transform(img))
             
-        mask_file = path.join(vid_gt_path, f'{mask_id}.png')
-        if path.exists(mask_file):
-            masks.append(np.array(Image.open(mask_file).convert('P').resize(self.shape[video]), dtype=np.uint8))
-            this_labels = np.unique(masks[-1])
-            this_labels = this_labels[this_labels!=0]
-            info['gt_obj'][int(mask_id)] = this_labels
-        else:
-            # Mask not exists -> nothing in it
-            masks.append(np.zeros(self.shape[video]))
+            if f == mask_id + '.jpg':
+                mask_file = path.join(vid_gt_path, f'{mask_id}.png')
+                masks.append(np.array(Image.open(mask_file).convert('P').resize(self.shape[video]), dtype=np.uint8))
+                this_labels = np.unique(masks[-1])
+                this_labels = this_labels[this_labels!=0]
+                info['gt_obj'][i] = this_labels
+            else:
+                # Mask not exists -> nothing in it
+                masks.append(np.zeros(self.shape[video]))
         
         images = torch.stack(images, 0)
         masks = np.stack(masks, 0)
