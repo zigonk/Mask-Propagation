@@ -93,7 +93,7 @@ for data in progressbar(test_loader, max_value=len(test_loader), redirect_stdout
     gt_obj = info['gt_obj']
     size = info['size']
     eid = info['exp_id'][0]
-    first_frame_id = info['frames'][0][0]
+    first_frame_id = info['frames'][0][0].split('.')[0]
     print('Processing video ', name, '_', eid)
     torch.cuda.synchronize()
     process_begin = time.time()
