@@ -22,6 +22,7 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
 from PIL import Image
+import json
 
 from model.eval_network import PropagationNetwork
 from dataset.yv_test_dataset import YouTubeVOSTestDataset
@@ -35,6 +36,10 @@ Arguments loading
 parser = ArgumentParser()
 parser.add_argument('--model', default='saves/propagation_model.pth')
 parser.add_argument('--yv', default='../YouTube')
+parser.add_argument('--mask', default=None)
+parser.add_argument('--metadata', default=None, help='metadata is used for dataloader')
+parser.add_argument('--meta_exp', default=None, help='meta expression is used for export mask')
+parser.add_argument('--slice', default=None)
 parser.add_argument('--output')
 parser.add_argument('--split', default='valid')
 parser.add_argument('--use_km', action='store_true')
@@ -43,6 +48,17 @@ args = parser.parse_args()
 
 yv_path = args.yv
 out_path = args.output
+mask_root = args.mask
+metadata = args.metadata
+meta_exp_path = args.meta_exp
+
+in_range = None
+if args.slice is not None:
+    in_range = slice(args.slice[0], args.slice[1], 1)
+
+meta_exp = {}
+with open(meta_exp_path) as f:
+    meta_exp = json.load(f)
 
 # Simple setup
 os.makedirs(out_path, exist_ok=True)
@@ -52,7 +68,7 @@ palette = [0, 0, 0, 236, 95, 103, 249, 145, 87, 250, 200, 99, 153, 199, 148, 98,
 torch.autograd.set_grad_enabled(False)
 
 # Setup Dataset
-test_dataset = YouTubeVOSTestDataset(data_root=yv_path, split=args.split)
+test_dataset = YouTubeVOSTestDataset(data_root=yv_path, split=args.split, mask_root = mask_root, metadata=metadata, in_range = in_range)
 test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=2)
 
 # Load our checkpoint
@@ -76,7 +92,8 @@ for data in progressbar(test_loader, max_value=len(test_loader), redirect_stdout
     k = len(info['labels'][0])
     gt_obj = info['gt_obj']
     size = info['size']
-
+    eid = data['exp_id']
+    print('Processing video ', name, '_', eid)
     torch.cuda.synchronize()
     process_begin = time.time()
 
@@ -132,13 +149,15 @@ for data in progressbar(test_loader, max_value=len(test_loader), redirect_stdout
     total_frames += (idx_masks.shape[0] - min_idx)
 
     # Save the results
-    this_out_path = path.join(out_path, name)
+    this_out_path = path.join(out_path, name, eid)
     os.makedirs(this_out_path, exist_ok=True)
-    for f in range(idx_masks.shape[0]):
-        if f >= min_idx:
-            img_E = Image.fromarray(idx_masks[f])
-            img_E.putpalette(palette)
-            img_E.save(os.path.join(this_out_path, info['frames'][f][0].replace('.jpg','.png')))
+    export_frames = meta_exp['videos'][name]['frames']
+    for fid in export_frames:
+        f = int(fid)
+        img_E = Image.fromarray(idx_masks[f])
+        img_E.putpalette(palette)
+        img_E.convert('L')
+        img_E.save(os.path.join(this_out_path, f'{fid}.png'))
 
     del rgb
     del msk

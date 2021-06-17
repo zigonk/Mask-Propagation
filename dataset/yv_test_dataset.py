@@ -12,16 +12,23 @@ from torchvision import transforms
 from PIL import Image
 import numpy as np
 import random
+import json
 
 from dataset.range_transform import im_normalization
 from dataset.util import all_to_onehot
 
 
 class YouTubeVOSTestDataset(Dataset):
-    def __init__(self, data_root, split):
+    def __init__(self, data_root, split, mask_root=None, metadata=None, in_range=None):
         self.image_dir = path.join(data_root, 'all_frames', split+'_all_frames', 'JPEGImages')
-        self.mask_dir = path.join(data_root, split, 'Annotations')
-
+        if mask_root is None:
+            self.mask_dir = path.join(data_root, split, 'Annotations')
+        else:
+            self.mask_dir = mask_root
+        with open(metadata) as f:
+            self.metadata = sorted(json.load(f))
+        if in_range is not None:
+            self.metadata = self.metadata[in_range]
         self.videos = []
         self.shape = {}
         self.frames = {}
@@ -33,9 +40,11 @@ class YouTubeVOSTestDataset(Dataset):
             self.frames[vid] = frames
 
             self.videos.append(vid)
-            first_mask = os.listdir(path.join(self.mask_dir, vid))[0]
-            _mask = np.array(Image.open(path.join(self.mask_dir, vid, first_mask)).convert("P"))
-            self.shape[vid] = np.shape(_mask)
+            first_frame = np.array(Image.open(path.join(self.image_dir, vid, frames[0])))
+            self.shape[vid] = np.shape(first_frame)
+            # first_mask = os.listdir(path.join(self.mask_dir, vid))[0]
+            # _mask = np.array(Image.open(path.join(self.mask_dir, vid, first_mask)).convert("P"))
+            # self.shape[vid] = np.shape(_mask)
 
         self.im_transform = transforms.Compose([
             transforms.ToTensor(),
@@ -48,16 +57,20 @@ class YouTubeVOSTestDataset(Dataset):
         ])
 
     def __getitem__(self, idx):
-        video = self.videos[idx]
+        data_info = self.metadata[idx]
+        video = data_info['video_id']
+        eid = data_info['exp_id']
+        mask_id = data_info['mask_id']
         info = {}
         info['name'] = video
+        info['exp_id'] = eid
         info['num_objects'] = 0
         info['frames'] = self.frames[video] 
         info['size'] = self.shape[video] # Real sizes
         info['gt_obj'] = {} # Frames with labelled objects
 
         vid_im_path = path.join(self.image_dir, video)
-        vid_gt_path = path.join(self.mask_dir, video)
+        vid_gt_path = path.join(self.mask_dir, video, eid)
 
         frames = self.frames[video]
 
@@ -67,15 +80,15 @@ class YouTubeVOSTestDataset(Dataset):
             img = Image.open(path.join(vid_im_path, f)).convert('RGB')
             images.append(self.im_transform(img))
             
-            mask_file = path.join(vid_gt_path, f.replace('.jpg','.png'))
-            if path.exists(mask_file):
-                masks.append(np.array(Image.open(mask_file).convert('P'), dtype=np.uint8))
-                this_labels = np.unique(masks[-1])
-                this_labels = this_labels[this_labels!=0]
-                info['gt_obj'][i] = this_labels
-            else:
-                # Mask not exists -> nothing in it
-                masks.append(np.zeros(self.shape[video]))
+        mask_file = path.join(vid_gt_path, f'{mask_id}.png')
+        if path.exists(mask_file):
+            masks.append(np.array(Image.open(mask_file).convert('P').resize(self.shape[video]), dtype=np.uint8))
+            this_labels = np.unique(masks[-1])
+            this_labels = this_labels[this_labels!=0]
+            info['gt_obj'][int(mask_id)] = this_labels
+        else:
+            # Mask not exists -> nothing in it
+            masks.append(np.zeros(self.shape[video]))
         
         images = torch.stack(images, 0)
         masks = np.stack(masks, 0)
@@ -107,4 +120,4 @@ class YouTubeVOSTestDataset(Dataset):
         return data
 
     def __len__(self):
-        return len(self.videos)
+        return len(self.metadata)
