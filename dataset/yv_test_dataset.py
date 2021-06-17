@@ -61,6 +61,8 @@ class YouTubeVOSTestDataset(Dataset):
         video = data_info['video_id']
         eid = data_info['exp_id']
         mask_id = data_info['mask_id']
+        if (mask_id == 0):
+            mask_id = '00000'
         info = {}
         info['name'] = video
         info['exp_id'] = eid
