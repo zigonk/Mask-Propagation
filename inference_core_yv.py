@@ -89,14 +89,9 @@ class InferenceCore:
         last_ti = idx
 
         # Note that we never reach closest_ti, just the frame before it
-        if forward:
-            this_range = range(idx+1, closest_ti)
-            step = +1
-            end = closest_ti - 1
-        else:
-            this_range = range(idx-1, -1, -1)
-            step = -1
-            end = 0
+        step = forward ? 1 : -1
+        this_range = range(idx+step, closest_ti, step)
+        end = closest_ti + step
 
         for ti in this_range:
             if prev_in_mem:
@@ -138,7 +133,7 @@ class InferenceCore:
 
         return closest_ti
 
-    def interact(self, mask, frame_idx, end_idx, obj_idx):
+    def interact(self, mask, frame_idx, start_idx, end_idx, obj_idx):
         """
         mask - Input one-hot encoded mask WITHOUT the background class
         frame_idx, end_idx - Start and end idx of propagation
@@ -163,4 +158,4 @@ class InferenceCore:
 
         # Propagate
         self.do_pass(key_k, key_v, frame_idx, end_idx, forward=True)
-        self.do_pass(key_k, key_v, frame_idx, end_idx, forward=False)
+        self.do_pass(key_k, key_v, frame_idx, start_idx, forward=False)
