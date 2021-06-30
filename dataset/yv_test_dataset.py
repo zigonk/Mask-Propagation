@@ -32,10 +32,13 @@ class YouTubeVOSTestDataset(Dataset):
         self.videos = []
         self.shape = {}
         self.frames = {}
-
-        vid_list = sorted(os.listdir(self.image_dir))
-        # Pre-reading
+        self.meta_propagate = []
+        vid_list = sorted(self.metadata.keys())
         for vid in self.metadata.keys():
+            for eid in self.metadata[vid].keys():
+                self.meta_propagate.append({'video_id': vid, 'exp_id': eid, 'mask_ids': self.metadata[vid][eid]})
+        # Pre-reading
+        for vid in vid_list:
             frames = sorted(os.listdir(os.path.join(self.image_dir, vid)))
             self.frames[vid] = frames
 
@@ -57,7 +60,7 @@ class YouTubeVOSTestDataset(Dataset):
         ])
 
     def __getitem__(self, idx):
-        data_info = self.metadata[idx]
+        data_info = self.meta_propagate[idx]
         video = data_info['video_id']
         eid = data_info['exp_id']
         mask_ids = data_info['mask_ids']
@@ -125,4 +128,4 @@ class YouTubeVOSTestDataset(Dataset):
         return data
 
     def __len__(self):
-        return len(self.metadata)
+        return len(self.meta_propagate)
