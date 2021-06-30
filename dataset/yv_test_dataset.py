@@ -60,7 +60,7 @@ class YouTubeVOSTestDataset(Dataset):
         data_info = self.metadata[idx]
         video = data_info['video_id']
         eid = data_info['exp_id']
-        mask_id = data_info['mask_id']
+        mask_ids = data_info['mask_ids']
         info = {}
         info['name'] = video
         info['exp_id'] = eid
@@ -73,10 +73,6 @@ class YouTubeVOSTestDataset(Dataset):
         vid_gt_path = path.join(self.mask_dir, video, eid)
 
         skip = False
-        if (mask_id == 0):
-            mask_id = '00000'
-            skip = True
-
         frames = self.frames[video]
 
         images = []
@@ -84,9 +80,9 @@ class YouTubeVOSTestDataset(Dataset):
         for i, f in enumerate(frames):
             img = Image.open(path.join(vid_im_path, f)).convert('RGB')
             images.append(self.im_transform(img))
-            
-            if f == mask_id + '.jpg':
-                mask_file = path.join(vid_gt_path, f'{mask_id}.png')
+            fid = f.split('.')[0]
+            if fid in mask_ids:
+                mask_file = path.join(vid_gt_path, f'{fid}.png')
                 mask = np.array(Image.open(mask_file).resize(self.shape[video][::-1], resample=Image.NEAREST).convert('P'), dtype=np.uint8)
                 masks.append(mask)
                 this_labels = np.unique(masks[-1])
