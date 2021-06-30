@@ -124,8 +124,8 @@ for data in progressbar(test_loader, max_value=len(test_loader), redirect_stdout
         ], 0).cuda()
 
         # We perform propagation from the current frame to the next frame with label
-        prev_frame_idx = i == 0 ? -1 : (frame_idx + frames_with_gt[i-1]) // 2
-        next_frame_idx = i == len(frames_with_gt) - 1 ? rgb.shape[1] : (frame_idx + frames_with_gt[i+1]) // 2 + 1
+        prev_frame_idx = (i == 0) ? -1 : (frame_idx + frames_with_gt[i-1]) // 2
+        next_frame_idx = (i == len(frames_with_gt) - 1) ? rgb.shape[1] : (frame_idx + frames_with_gt[i+1]) // 2 + 1
         processor.interact(with_bg_msk, frame_idx, prev_frame_idx, next_frame_idx, obj_idx)
 
     # Do unpad -> upsample to original size (we made it 480p)
