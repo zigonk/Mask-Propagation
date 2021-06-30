@@ -89,7 +89,7 @@ class InferenceCore:
         last_ti = idx
 
         # Note that we never reach closest_ti, just the frame before it
-        step = forward ? 1 : -1
+        step = 1 if forward else -1
         this_range = range(idx+step, closest_ti, step)
         end = closest_ti + step
 
