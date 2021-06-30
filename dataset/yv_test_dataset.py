@@ -35,7 +35,7 @@ class YouTubeVOSTestDataset(Dataset):
 
         vid_list = sorted(os.listdir(self.image_dir))
         # Pre-reading
-        for vid in vid_list:
+        for vid in self.metadata.keys():
             frames = sorted(os.listdir(os.path.join(self.image_dir, vid)))
             self.frames[vid] = frames
 
