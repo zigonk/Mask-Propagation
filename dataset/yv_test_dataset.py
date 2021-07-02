@@ -84,6 +84,8 @@ class YouTubeVOSTestDataset(Dataset):
         frames = info['frames']
         images = []
         masks = []
+        print(info['frames'])
+        print(mask_id)
         for i, f in enumerate(frames):
             img = Image.open(path.join(vid_im_path, f)).convert('RGB')
             images.append(self.im_transform(img))
