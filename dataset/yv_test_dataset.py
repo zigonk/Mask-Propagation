@@ -102,8 +102,10 @@ class YouTubeVOSTestDataset(Dataset):
         
         images = torch.stack(images, 0)
         masks = np.stack(masks, 0)
-        if (np.sum(masks == 0)):
+        if (np.sum(masks) == 0):
             skip = True
+        else:
+            skip = False
         # Construct the forward and backward mapping table for labels
         labels = np.unique(masks).astype(np.uint8)
         labels = labels[labels!=0]
