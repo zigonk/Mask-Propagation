@@ -103,7 +103,7 @@ for data in progressbar(test_loader, max_value=len(test_loader), redirect_stdout
     #     export_frames = meta_exp['videos'][name]['frames']
         rgb = rgb.detach().cpu().numpy().astype(np.uint8)
         print(rgb.shape)
-        
+        break
 #         for f in range(msk.shape[0]):
 #             img_E = Image.fromarray(msk[f][0])
 #             img_E.save(os.path.join(this_out_path, info['frames'][f][0].replace('.jpg','.png')))
