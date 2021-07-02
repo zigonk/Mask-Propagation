@@ -102,13 +102,12 @@ for data in progressbar(test_loader, max_value=len(test_loader), redirect_stdout
         this_out_path = path.join(out_path, name, eid)
         os.makedirs(this_out_path, exist_ok=True)
     #     export_frames = meta_exp['videos'][name]['frames']
-        rgb = rgb.detach().cpu().numpy().astype(np.uint8)
-        print(rgb.shape)
-        break
-#         for f in range(msk.shape[0]):
-#             img_E = Image.fromarray(msk[f][0])
-#             img_E.save(os.path.join(this_out_path, info['frames'][f][0].replace('.jpg','.png')))
-#         continue
+        rgb = rgb.detach().cpu().numpy().astype(np.uint8)[0]
+        black_mask = np.zeros(rgb.shape[2:4], dtype=np.uint8)
+        for f in range(rgb.shape[0]):
+            img_E = Image.fromarray(black_mask)
+            img_E.save(os.path.join(this_out_path, info['frames'][f][0].replace('.jpg','.png')))
+        continue
     torch.cuda.synchronize()
     process_begin = time.time()
 
