@@ -81,7 +81,6 @@ class YouTubeVOSTestDataset(Dataset):
         end_idx = min(int(mask_id) - int(first_frame_id) + 13, len(info['frames']))
         skip = False
         info['frames'] = info['frames'][start_idx:end_idx]
-        print(info['frames'])
         frames = info['frames']
         images = []
         masks = []
