@@ -37,7 +37,7 @@ class YouTubeVOSTestDataset(Dataset):
         for vid in self.metadata.keys():
             for eid in self.metadata[vid].keys():
                 for mid in self.metadata[vid][eid]:
-                self.meta_propagate.append({'video_id': vid, 'exp_id': eid, 'mask_id': mid})
+                    self.meta_propagate.append({'video_id': vid, 'exp_id': eid, 'mask_id': mid})
         # Pre-reading
         for vid in vid_list:
             frames = sorted(os.listdir(os.path.join(self.image_dir, vid)))
