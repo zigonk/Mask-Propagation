@@ -76,7 +76,7 @@ class YouTubeVOSTestDataset(Dataset):
         vid_im_path = path.join(self.image_dir, video)
         vid_gt_path = path.join(self.mask_dir, video, eid)
 
-        first_frame_id = info['frames'].replace('.jpg', '')
+        first_frame_id = info['frames'][0].replace('.jpg', '')
         start_idx = max(int(mask_id) - int(first_frame_id) - 12, 0)
         end_idx = min(int(mask_id) - int(first_frame_id) + 13, len(info['frames']))
         skip = False
