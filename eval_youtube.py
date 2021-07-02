@@ -96,6 +96,7 @@ for data in progressbar(test_loader, max_value=len(test_loader), redirect_stdout
     eid = info['exp_id'][0]
     skip = data['skip']
     print('Processing video ', name, '_', eid)
+    skip = True
     if skip:
         print('No available mask')
         this_out_path = path.join(out_path, name, eid)
