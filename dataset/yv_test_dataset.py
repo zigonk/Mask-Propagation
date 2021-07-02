@@ -36,7 +36,8 @@ class YouTubeVOSTestDataset(Dataset):
         vid_list = sorted(self.metadata.keys())
         for vid in self.metadata.keys():
             for eid in self.metadata[vid].keys():
-                self.meta_propagate.append({'video_id': vid, 'exp_id': eid, 'mask_ids': self.metadata[vid][eid]})
+                for mid in self.metadata[vid][eid]:
+                self.meta_propagate.append({'video_id': vid, 'exp_id': eid, 'mask_id': mid})
         # Pre-reading
         for vid in vid_list:
             frames = sorted(os.listdir(os.path.join(self.image_dir, vid)))
@@ -63,7 +64,7 @@ class YouTubeVOSTestDataset(Dataset):
         data_info = self.meta_propagate[idx]
         video = data_info['video_id']
         eid = data_info['exp_id']
-        mask_ids = data_info['mask_ids']
+        mask_id = data_info['mask_id']
         info = {}
         info['name'] = video
         info['exp_id'] = eid
@@ -75,9 +76,12 @@ class YouTubeVOSTestDataset(Dataset):
         vid_im_path = path.join(self.image_dir, video)
         vid_gt_path = path.join(self.mask_dir, video, eid)
 
+        first_frame_id = info['frames'].replace('.jpg', '')
+        start_idx = max(int(mask_id) - int(first_frame_id) - 12, 0)
+        end_idx = min(int(mask_id) - int(first_frame_id) + 13, len(info['frames']))
         skip = False
-        frames = self.frames[video]
-
+        info['frames'] = info['frames'][start_idx:end_idx]
+        frames = info['frames']
         images = []
         masks = []
         for i, f in enumerate(frames):
@@ -85,7 +89,7 @@ class YouTubeVOSTestDataset(Dataset):
             images.append(self.im_transform(img))
             fid = f.split('.')[0]
             mask = np.zeros(self.shape[video])
-            if fid in mask_ids:
+            if fid == mask_id:
                 mask_file = path.join(vid_gt_path, f'{fid}.png')
                 mask = np.array(Image.open(mask_file).resize(self.shape[video][::-1], resample=Image.NEAREST).convert('P'), dtype=np.uint8)
             masks.append(mask)
@@ -96,7 +100,8 @@ class YouTubeVOSTestDataset(Dataset):
         
         images = torch.stack(images, 0)
         masks = np.stack(masks, 0)
-        
+        if (np.sum(masks == 0)):
+            skip = True
         # Construct the forward and backward mapping table for labels
         labels = np.unique(masks).astype(np.uint8)
         labels = labels[labels!=0]
