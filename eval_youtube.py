@@ -102,6 +102,7 @@ for data in progressbar(test_loader, max_value=len(test_loader), redirect_stdout
         os.makedirs(this_out_path, exist_ok=True)
     #     export_frames = meta_exp['videos'][name]['frames']
         msk = msk.detach().cpu().numpy()
+        print(msk.shape)
         for f in range(msk.shape[0]):
             img_E = Image.fromarray(msk[f])
             img_E.save(os.path.join(this_out_path, info['frames'][f][0].replace('.jpg','.png')))
