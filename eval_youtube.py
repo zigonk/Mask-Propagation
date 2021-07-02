@@ -156,13 +156,19 @@ for data in progressbar(test_loader, max_value=len(test_loader), redirect_stdout
     # Save the results
     this_out_path = path.join(out_path, name, eid)
     os.makedirs(this_out_path, exist_ok=True)
-    export_frames = meta_exp['videos'][name]['frames']
-    for fid in export_frames:
-        f = int(fid) - int(first_frame_id)
-        img_E = Image.fromarray(idx_masks[f])
-        img_E.putpalette(palette)
-        img_E.convert('L')
-        img_E.save(os.path.join(this_out_path, f'{fid}.png'))
+#     export_frames = meta_exp['videos'][name]['frames']
+    for f in range(idx_masks.shape[0]):
+        if f >= min_idx:
+            img_E = Image.fromarray(idx_masks[f])
+            img_E.putpalette(palette)
+            img_E.save(os.path.join(this_out_path, info['frames'][f][0].replace('.jpg','.png')))
+
+#     for fid in export_frames:
+#         f = int(fid) - int(first_frame_id)
+#         img_E = Image.fromarray(idx_masks[f])
+#         img_E.putpalette(palette)
+#         img_E.convert('L')
+#         img_E.save(os.path.join(this_out_path, f'{fid}.png'))
 
     del rgb
     del msk
