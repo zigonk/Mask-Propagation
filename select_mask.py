@@ -191,7 +191,7 @@ if __name__ == "__main__":
                 start_idx = full_frames_ids.index(prev_frame_id + '.jpg')
                 end_idx = full_frames_ids.index(current_frame_id + '.jpg')
                 print(current_frame_id, prev_frame_id, full_frames_ids[start_idx:end_idx+1])
-                break
+                continue
                 data = prepare_data(vid, eid, full_frames_id[start_idx:end_idx+1])
                 mask_propagate = propagate(data)
                 
