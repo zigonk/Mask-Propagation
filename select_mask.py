@@ -53,7 +53,6 @@ def prepare_data(vid, eid, frame_ids):
     # Resize to 480p
     masks = mask_transform(masks)
     masks = masks.unsqueeze(2)
-    print(masks.size())
     info['labels'] = labels
     
     return {
@@ -72,7 +71,7 @@ def propagate(data, prop_model):
     global total_frames
     global palette
     rgb = data['rgb'].cuda()
-    msk = data['gt'][0].cuda()
+    msk = data['gt'].cuda()
     info = data['info']
     k = len(info['labels'])
     size = info['size']
