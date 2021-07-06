@@ -100,7 +100,7 @@ def propagate(data, prop_model):
 
     total_process_time += time.time() - process_begin
     total_frames += out_masks.shape[0]
-    print(out_masks[-1].shape())
+    print(out_masks.shape)
     mask_E = Image.fromarray(out_masks[-1])
     mask_E.putpalette(palette)
     
