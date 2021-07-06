@@ -193,6 +193,8 @@ if __name__ == "__main__":
                 end_idx = full_frames_ids.index(current_frame_id + '.jpg')
 
                 data = prepare_data(vid, eid, full_frames_ids[start_idx:end_idx+1])
+                print(data)
+                continue
                 mask_propagate = propagate(data, prop_model)
                 
                 iou_score = compare_iou(mask_propagate, mask_predicted)
