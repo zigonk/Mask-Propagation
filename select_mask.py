@@ -50,6 +50,7 @@ def prepare_data(vid, eid, frame_ids):
     masks = load_mask_frames(vid, eid, frame_ids, shape)
     this_labels = np.unique(masks[0])
     this_labels = this_labels[this_labels!=0]
+    print(this_labels)
     info['gt_obj'][0] = this_labels
     labels = np.unique(masks).astype(np.uint8)
     labels = labels[labels!=0]
@@ -104,7 +105,6 @@ def propagate(data, prop_model):
         # min_idx = min(frame_idx, min_idx)
         # Note that there might be more than one label per frame
         obj_idx = gt_obj[frame_idx][0].tolist()
-        print(obj_idx)
         # Map the possibly non-continuous labels into a continuous scheme
         obj_idx = [info['label_convert'][o].item() for o in obj_idx]
 
