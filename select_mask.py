@@ -80,7 +80,11 @@ def propagate(data, prop_model):
     process_begin = time.time()
 
     processor = InferenceCore(prop_model, rgb, k)
-    processor.interact(msk[:,0], 0, rgb.shape[1])
+    with_bg_msk = torch.cat([
+        1 - torch.sum(msk[:,0], dim=0, keepdim=True),
+        msk[:,0],
+    ], 0).cuda()
+    processor.interact(with_bg_msk, 0, rgb.shape[1])
 
     # Do unpad -> upsample to original size 
     out_masks = torch.zeros((processor.t, 1, *size), dtype=torch.uint8, device='cuda')
