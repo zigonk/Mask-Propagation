@@ -25,7 +25,7 @@ def load_image_frames(vid, frame_ids):
     global args, im_transform
     images = []
     for fid in frame_ids:
-        img = Image.open(path.join(args.imdir, vid, f'{fid}.jpg')).convert('RGB')
+        img = Image.open(path.join(args.imdir, vid, fid)).convert('RGB')
         images.append(im_transform(img))
     images = torch.stack(images, 0)
     return images
@@ -33,8 +33,8 @@ def load_image_frames(vid, frame_ids):
 def load_mask_frames(vid, eid, frame_ids, shape):
     global args
     masks = []
-    masks = np.zeros((frame_ids.shape[0], shape[0], shape[1]))
-    gt_mask_file = path.join(args.output, vid, eid, f'{frame_ids[0]}.png')
+    masks = np.zeros((len(frame_ids), shape[0], shape[1]))
+    gt_mask_file = path.join(args.output, vid, eid, frame_ids[0].replace('jpg', 'png'))
     gt_mask = np.array(Image.open(gt_mask_file).resize(shape[::-1], resample=Image.NEAREST).convert('P'), dtype=np.uint8)
     masks[0] = gt_mask
     return masks
@@ -42,11 +42,11 @@ def load_mask_frames(vid, eid, frame_ids, shape):
 def prepare_data(vid, eid, frame_ids):
     global mask_transform
     info = {}
-    first_frame = np.array(Image.open(path.join(args.imdir, vid, frame_ids[0] + '.jpg')))
+    first_frame = np.array(Image.open(path.join(args.imdir, vid, frame_ids[0])))
     shape = np.shape(first_frame)[:2]
     info['size'] = shape
     images = load_image_frames(vid, frame_ids)
-    masks = load_mask_frames(vid, eid, frame_ids[0], shape)
+    masks = load_mask_frames(vid, eid, frame_ids, shape)
     labels = np.unique(masks).astype(np.uint8)
     labels = labels[labels!=0]
     info['label_convert'] = {}
