@@ -78,6 +78,7 @@ def prepare_data(vid, eid, frame_ids):
 def propagate(data, prop_model):
     global total_process_time
     global total_frames
+    global palette
     rgb = data['rgb'].cuda()
     msk = data['gt'][0].cuda()
     info = data['info']
