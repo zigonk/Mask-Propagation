@@ -100,7 +100,6 @@ def propagate(data, prop_model):
 
     total_process_time += time.time() - process_begin
     total_frames += out_masks.shape[0]
-    print(out_masks.max())
     mask_E = Image.fromarray(out_masks[-1])
     mask_E.putpalette(palette)
     
@@ -114,6 +113,8 @@ def compare_iou(mask1, mask2):
     mask2 = np.asarray(np.asarray(mask2) > 0)
     inter = np.sum(mask1 * mask2)
     union = np.sum(mask1 + mask2) - inter
+    print(inter)
+    print(union)
     return inter / (union + 1e-6)
 
 
