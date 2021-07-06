@@ -173,20 +173,20 @@ if __name__ == "__main__":
     for vid in valid_video_list:
         video_info = meta_data['videos'][vid]
         full_frames_id = sorted(os.listdir(os.path.join(args.imdir, vid)))
-        query_frames_id = sorted(video_info['frames'].keys())
+        query_frames_ids = sorted(video_info['frames'])
         for eid in video_info['expressions'].keys():
             previous_mask = None
             output_dir = os.path.join(args.output, vid, eid)
             os.makedirs(output_dir, exist_ok=True)
-            for ind in range(0, len(query_frames_id)):
-                current_frame_id = query_frames_id[ind]
+            for ind in range(0, len(query_frames_ids)):
+                current_frame_id = query_frames_ids[ind]
                 # output_path = os.path.join(output_dir, f'{current_frame_id}.png')
                 # mask_file = os.path.join(args.mskdir, vid, eid, f'{current_frame_id}.png')
                 # mask_predicted = Image.open(mask_file)
                 # if (np.sum(np.asarray(previous_mask)) == 0):
                 #     mask_predicted.save(output_path)
                 #     continue
-                prev_frame_id = query_frames_id[ind - 1]
+                prev_frame_id = query_frames_ids[ind - 1]
                 data = {}
                 start_idx = full_frames_id.index(prev_frame_id)
                 end_idx = full_frames_id.index(current_frame_id)
