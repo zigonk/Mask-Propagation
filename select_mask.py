@@ -173,7 +173,6 @@ if __name__ == "__main__":
     for vid in valid_video_list:
         video_info = meta_data['videos'][vid]
         full_frames_ids = sorted(os.listdir(os.path.join(args.imdir, vid)))
-        print(full_frames_ids)
         query_frames_ids = sorted(video_info['frames'])
         for eid in video_info['expressions'].keys():
             previous_mask = None
