@@ -100,8 +100,9 @@ def propagate(data, prop_model):
 
     total_process_time += time.time() - process_begin
     total_frames += out_masks.shape[0]
+    print(out_masks.shape())
     mask_E = Image.fromarray(out_masks[-1])
-    # mask_E.putpalette(palette)
+    mask_E.putpalette(palette)
     
     del rgb
     del msk
@@ -187,7 +188,8 @@ if __name__ == "__main__":
 
                 data = prepare_data(vid, eid, full_frames_ids[start_idx:end_idx+1])
                 
-                mask_propagate = propagate(data, prop_model)
+                mask_propagate = np.asarray(propagate(data, prop_model) > 0, dtype = 'int8')
+                print(mask_propagate.shape())
                 
                 iou_score = compare_iou(mask_propagate, mask_predicted)
                 result = mask_propagate if iou_score >= iou_threshold else mask_predicted
