@@ -45,6 +45,7 @@ def prepare_data(vid, eid, frame_ids):
     first_frame = np.array(Image.open(path.join(args.imdir, vid, frame_ids[0])))
     shape = np.shape(first_frame)[:2]
     info['size'] = shape
+    info['gt_obj'] = {}
     images = load_image_frames(vid, frame_ids)
     masks = load_mask_frames(vid, eid, frame_ids, shape)
     this_labels = np.unique(masks[0])
