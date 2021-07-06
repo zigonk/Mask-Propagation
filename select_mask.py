@@ -190,7 +190,8 @@ if __name__ == "__main__":
                 mask_propagate = propagate(data, prop_model)
                 
                 iou_score = compare_iou(mask_propagate, mask_predicted)
-                result = mask_propagate if iou_score > iou_threshold else mask_predicted
+                print(iou_score)
+                result = mask_propagate if iou_score >= iou_threshold else mask_predicted
                 result.save(output_path)
                 previous_mask = result
 
