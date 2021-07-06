@@ -104,6 +104,7 @@ def propagate(data, prop_model):
         # min_idx = min(frame_idx, min_idx)
         # Note that there might be more than one label per frame
         obj_idx = gt_obj[frame_idx][0].tolist()
+        print(obj_idx)
         # Map the possibly non-continuous labels into a continuous scheme
         obj_idx = [info['label_convert'][o].item() for o in obj_idx]
 
