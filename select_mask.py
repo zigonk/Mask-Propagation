@@ -84,7 +84,6 @@ def propagate(data, prop_model):
         1 - torch.sum(msk[:,0], dim=0, keepdim=True),
         msk[:,0],
     ], 0).cuda()
-    print(with_bg_msk.size())
     processor.interact(with_bg_msk, 0, rgb.shape[1])
 
     # Do unpad -> upsample to original size 
