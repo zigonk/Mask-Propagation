@@ -96,13 +96,11 @@ def propagate(data, prop_model):
         prob = F.interpolate(prob, size, mode='bilinear', align_corners=False)
         out_masks[ti] = torch.argmax(prob, dim=0)
     
-    out_masks = (out_masks.detach().cpu().numpy()[:,0]).astype(np.uint8)
+    out_masks = (out_masks.detach().cpu().numpy()[:,0]).astype(np.uint8) * 255
 
     total_process_time += time.time() - process_begin
     total_frames += out_masks.shape[0]
-    print(out_masks.shape)
     mask_E = Image.fromarray(out_masks[-1])
-    mask_E.putpalette(palette)
     
     del rgb
     del msk
@@ -188,8 +186,8 @@ if __name__ == "__main__":
 
                 data = prepare_data(vid, eid, full_frames_ids[start_idx:end_idx+1])
                 
-                mask_propagate = np.asarray(propagate(data, prop_model) > 0, dtype = 'int8')
-                print(mask_propagate.shape())
+                mask_propagate = propagate(data, prop_model)
+                print(np.asarray(mask_propagate).shape)
                 
                 iou_score = compare_iou(mask_propagate, mask_predicted)
                 result = mask_propagate if iou_score >= iou_threshold else mask_predicted
