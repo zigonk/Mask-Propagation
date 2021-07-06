@@ -47,7 +47,8 @@ def prepare_data(vid, eid, frame_ids):
     info['size'] = shape
     images = load_image_frames(vid, frame_ids)
     masks = load_mask_frames(vid, eid, frame_ids, shape)
-    labels = [1]
+    labels = np.unique(masks[0])
+    labels = labels[labels!=0]
     masks = torch.from_numpy(all_to_onehot(masks, labels)).float()
 
     # Resize to 480p
