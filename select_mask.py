@@ -61,7 +61,7 @@ def prepare_data(vid, eid, frame_ids):
         info['label_backward'][idx] = l
         idx += 1
     masks = torch.from_numpy(all_to_onehot(masks, labels)).float()
-
+    print(info)
     masks = mask_transform(masks)
     masks = masks.unsqueeze(2)
 
