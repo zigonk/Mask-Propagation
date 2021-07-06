@@ -104,9 +104,9 @@ def propagate(data, prop_model):
     for i, frame_idx in enumerate(frames_with_gt):
         # min_idx = min(frame_idx, min_idx)
         # Note that there might be more than one label per frame
-        obj_idx = [gt_obj[frame_idx][0].tolist()]
+        obj_idx = [gt_obj[frame_idx][0]]
         # Map the possibly non-continuous labels into a continuous scheme
-        obj_idx = [info['label_convert'][o].item() for o in obj_idx]
+        obj_idx = [info['label_convert'][o] for o in obj_idx]
 
         # Append the background label
         with_bg_msk = torch.cat([
