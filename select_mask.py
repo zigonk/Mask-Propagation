@@ -27,7 +27,6 @@ def load_image_frames(vid, frame_ids):
     for fid in frame_ids:
         img = Image.open(path.join(args.imdir, vid, fid)).convert('RGB')
         images.append(im_transform(img))
-    images = torch.stack(images, 0)
     return images
 
 def load_mask_frames(vid, eid, frame_ids, shape):
@@ -39,13 +38,13 @@ def load_mask_frames(vid, eid, frame_ids, shape):
     masks[0] = gt_mask
     return masks
 
-def prepare_data(vid, eid, frame_ids):
+def prepare_data(vid, eid, frame_ids, frames):
     global mask_transform
     info = {}
     first_frame = np.array(Image.open(path.join(args.imdir, vid, frame_ids[0])))
     shape = np.shape(first_frame)[:2]
     info['size'] = shape
-    images = load_image_frames(vid, frame_ids)
+    images = torch.stack(frames, 0)
     masks = load_mask_frames(vid, eid, frame_ids, shape)
     labels = np.unique(masks[0])
     labels = labels[labels!=0]
@@ -165,6 +164,7 @@ if __name__ == "__main__":
         print(f'Processing video {vid}')
         video_info = meta_data['videos'][vid]
         full_frames_ids = sorted(os.listdir(os.path.join(args.imdir, vid)))
+        full_frames = load_image_frames(vid, full_frames_ids)
         query_frames_ids = sorted(video_info['frames'])
         for eid in video_info['expressions'].keys():
             previous_mask = None
@@ -173,6 +173,8 @@ if __name__ == "__main__":
             for ind in range(0, len(query_frames_ids)):
                 current_frame_id = query_frames_ids[ind]
                 output_path = os.path.join(output_dir, f'{current_frame_id}.png')
+                if (os.path.exists(output_path)):
+                    continue
                 mask_file = os.path.join(args.mskdir, vid, eid, f'{current_frame_id}.png')
                 mask_predicted = Image.open(mask_file)
                 if (ind == 0 or np.sum(np.asarray(previous_mask)) == 0):
@@ -184,7 +186,7 @@ if __name__ == "__main__":
                 start_idx = full_frames_ids.index(prev_frame_id + '.jpg')
                 end_idx = full_frames_ids.index(current_frame_id + '.jpg')
 
-                data = prepare_data(vid, eid, full_frames_ids[start_idx:end_idx+1])
+                data = prepare_data(vid, eid, full_frames_ids[start_idx:end_idx+1], full_frames[start_idx:end_idx+1])
                 
                 mask_propagate = propagate(data, prop_model)
                 
