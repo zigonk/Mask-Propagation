@@ -33,7 +33,7 @@ def load_image_frames(vid, frame_ids):
 def load_mask_frames(vid, eid, frame_ids, shape):
     global args
     masks = []
-    masks = np.zeros((len(frame_ids), shape[0], shape[1], shape[2]))
+    masks = np.zeros((len(frame_ids), shape[0], shape[1]))
     gt_mask_file = path.join(args.output, vid, eid, frame_ids[0].replace('jpg', 'png'))
     gt_mask = np.array(Image.open(gt_mask_file).resize(shape[::-1], resample=Image.NEAREST).convert('P'), dtype=np.uint8)
     masks[0] = gt_mask
@@ -104,7 +104,7 @@ def propagate(data, prop_model):
     for i, frame_idx in enumerate(frames_with_gt):
         # min_idx = min(frame_idx, min_idx)
         # Note that there might be more than one label per frame
-        obj_idx = gt_obj[frame_idx][0].tolist()
+        obj_idx = [gt_obj[frame_idx][0].tolist()]
         # Map the possibly non-continuous labels into a continuous scheme
         obj_idx = [info['label_convert'][o].item() for o in obj_idx]
 
