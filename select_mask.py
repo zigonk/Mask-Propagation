@@ -180,19 +180,19 @@ if __name__ == "__main__":
             os.makedirs(output_dir, exist_ok=True)
             for ind in range(0, len(query_frames_ids)):
                 current_frame_id = query_frames_ids[ind]
-                # output_path = os.path.join(output_dir, f'{current_frame_id}.png')
-                # mask_file = os.path.join(args.mskdir, vid, eid, f'{current_frame_id}.png')
-                # mask_predicted = Image.open(mask_file)
-                # if (np.sum(np.asarray(previous_mask)) == 0):
-                #     mask_predicted.save(output_path)
-                #     continue
+                output_path = os.path.join(output_dir, f'{current_frame_id}.png')
+                mask_file = os.path.join(args.mskdir, vid, eid, f'{current_frame_id}.png')
+                mask_predicted = Image.open(mask_file)
+                if (ind == 0 or np.sum(np.asarray(previous_mask)) == 0):
+                    mask_predicted.save(output_path)
+                    previous_mask = mask_predicted
+                    continue
                 prev_frame_id = query_frames_ids[ind - 1]
                 data = {}
                 start_idx = full_frames_ids.index(prev_frame_id + '.jpg')
                 end_idx = full_frames_ids.index(current_frame_id + '.jpg')
-                print(current_frame_id, prev_frame_id, full_frames_ids[start_idx:end_idx+1])
-                continue
-                data = prepare_data(vid, eid, full_frames_id[start_idx:end_idx+1])
+
+                data = prepare_data(vid, eid, full_frames_ids[start_idx:end_idx+1])
                 mask_propagate = propagate(data)
                 
                 iou_score = compare_iou(mask_propagate, mask_predicted)
