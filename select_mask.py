@@ -33,7 +33,7 @@ def load_image_frames(vid, frame_ids):
 def load_mask_frames(vid, eid, frame_ids, shape):
     global args
     masks = []
-    masks = np.zeros((len(frame_ids), 1, shape[0], shape[1]))
+    masks = np.zeros((len(frame_ids), shape[0], shape[1]))
     gt_mask_file = path.join(args.output, vid, eid, frame_ids[0].replace('jpg', 'png'))
     gt_mask = np.array(Image.open(gt_mask_file).resize(shape[::-1], resample=Image.NEAREST).convert('P'), dtype=np.uint8)
     masks[0] = gt_mask
