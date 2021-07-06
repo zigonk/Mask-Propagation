@@ -189,8 +189,8 @@ if __name__ == "__main__":
                 #     continue
                 prev_frame_id = query_frames_ids[ind - 1]
                 data = {}
-                start_idx = full_frames_ids.index(prev_frame_id)
-                end_idx = full_frames_ids.index(current_frame_id)
+                start_idx = full_frames_ids.index(prev_frame_id + '.jpg')
+                end_idx = full_frames_ids.index(current_frame_id + '.jpg')
                 print(current_frame_id, prev_frame_id, full_frames_ids[start_idx:end_idx+1])
                 break
                 data = prepare_data(vid, eid, full_frames_id[start_idx:end_idx+1])
