@@ -112,8 +112,6 @@ def propagate(data, prop_model):
 def compare_iou(mask1, mask2):
     mask1 = np.asarray(np.asarray(mask1) > 0)
     mask2 = np.asarray(np.asarray(mask2) > 0)
-    print(mask1.shape)
-    print(mask2.shape)
     inter = np.sum(mask1 * mask2)
     union = np.sum(mask1 + mask2) - inter
     return inter / (union + 1e-6)
