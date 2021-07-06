@@ -37,6 +37,7 @@ def load_mask_frames(vid, eid, frame_ids, shape):
     gt_mask_file = path.join(args.output, vid, eid, frame_ids[0].replace('jpg', 'png'))
     gt_mask = np.array(Image.open(gt_mask_file).resize(shape[::-1], resample=Image.NEAREST).convert('P'), dtype=np.uint8)
     masks[0] = gt_mask
+    print(masks[0].flatten())
     return masks
 
 def prepare_data(vid, eid, frame_ids):
@@ -114,8 +115,6 @@ def compare_iou(mask1, mask2):
     mask2 = np.asarray(np.asarray(mask2) > 0)
     inter = np.sum(mask1 * mask2)
     union = np.sum(mask1 + mask2) - inter
-    print(np.sum(mask1))
-    print(np.sum(mask2))
     return inter / (union + 1e-6)
 
 
