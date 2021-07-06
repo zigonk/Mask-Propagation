@@ -82,7 +82,7 @@ def propagate(data, prop_model):
     rgb = data['rgb'].cuda()
     msk = data['gt'][0].cuda()
     info = data['info']
-    k = len(info['labels'][0])
+    k = len(info['labels'])
     size = info['size']
 
     torch.cuda.synchronize()
