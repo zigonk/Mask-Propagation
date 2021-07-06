@@ -97,7 +97,6 @@ def propagate(data, prop_model):
     
     out_masks = (out_masks.detach().cpu().numpy()[:,0]).astype(np.uint8)
 
-    torch.cuda.synchronize()
     total_process_time += time.time() - process_begin
     total_frames += out_masks.shape[0]
     print(out_masks.max())
