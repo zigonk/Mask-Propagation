@@ -71,7 +71,7 @@ def propagate(data, prop_model):
     global total_frames
     global palette
     rgb = data['rgb'].cuda()
-    msk = data['gt'][0].cuda()
+    msk = data['gt'].cuda()
     info = data['info']
     k = len(info['labels'])
     size = info['size']
@@ -84,7 +84,7 @@ def propagate(data, prop_model):
         1 - torch.sum(msk[:,0], dim=0, keepdim=True),
         msk[:,0],
     ], 0).cuda()
-    processor.interact(with_bg_msk, 0, rgb.shape[1])
+    processor.interact(with_bg_msk[:,0], 0, rgb.shape[1])
 
     # Do unpad -> upsample to original size 
     out_masks = torch.zeros((processor.t, 1, *size), dtype=torch.uint8, device='cuda')
