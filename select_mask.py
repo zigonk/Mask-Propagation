@@ -57,7 +57,7 @@ def prepare_data(vid, eid, frame_ids):
     print(masks.size())
     print(images.size())
     return {
-        'rgb': [images],
+        'rgb': images,
         'gt': masks,
         'info': info
     }
