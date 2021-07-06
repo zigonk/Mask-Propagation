@@ -47,6 +47,9 @@ def prepare_data(vid, eid, frame_ids):
     info['size'] = shape
     images = load_image_frames(vid, frame_ids)
     masks = load_mask_frames(vid, eid, frame_ids, shape)
+    this_labels = np.unique(masks[0])
+    this_labels = this_labels[this_labels!=0]
+    info['gt_obj'][0] = this_labels
     labels = np.unique(masks).astype(np.uint8)
     labels = labels[labels!=0]
     info['label_convert'] = {}
