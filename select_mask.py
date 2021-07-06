@@ -101,7 +101,7 @@ def propagate(data, prop_model):
     total_process_time += time.time() - process_begin
     total_frames += out_masks.shape[0]
     mask_E = Image.fromarray(out_masks[-1])
-    mask_E.putpalette(palette)
+    # mask_E.putpalette(palette)
     
     del rgb
     del msk
