@@ -47,21 +47,13 @@ def prepare_data(vid, eid, frame_ids):
     info['size'] = shape
     images = load_image_frames(vid, frame_ids)
     masks = load_mask_frames(vid, eid, frame_ids, shape)
-    labels = np.unique(masks).astype(np.uint8)
-    labels = labels[labels!=0]
-    info['label_convert'] = {}
-    info['label_backward'] = {}
-    idx = 1
-    for l in labels:
-        info['label_convert'][l] = idx
-        info['label_backward'][idx] = l
-        idx += 1
+    labels = [1]
     masks = torch.from_numpy(all_to_onehot(masks, labels)).float()
 
     # Resize to 480p
     masks = mask_transform(masks)
     masks = masks.unsqueeze(2)
-
+    print(masks.size())
     info['labels'] = labels
     
     return {
