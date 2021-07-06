@@ -14,7 +14,7 @@ from PIL import Image
 
 from model.eval_network import PropagationNetwork
 from dataset.davis_test_dataset import DAVISTestDataset
-from inference_core_yv import InferenceCore
+from inference_core import InferenceCore
 
 from dataset.range_transform import im_normalization
 from dataset.util import all_to_onehot
@@ -45,30 +45,17 @@ def prepare_data(vid, eid, frame_ids):
     first_frame = np.array(Image.open(path.join(args.imdir, vid, frame_ids[0])))
     shape = np.shape(first_frame)[:2]
     info['size'] = shape
-    info['gt_obj'] = {}
     images = load_image_frames(vid, frame_ids)
     masks = load_mask_frames(vid, eid, frame_ids, shape)
-    this_labels = np.unique(masks[0])
-    this_labels = this_labels[this_labels!=0]
-    print(this_labels)
-    info['gt_obj'][0] = this_labels
-    labels = np.unique(masks).astype(np.uint8)
-    labels = labels[labels!=0]
-    info['label_convert'] = {}
-    info['label_backward'] = {}
-    idx = 1
-    for l in labels:
-        info['label_convert'][l] = idx
-        info['label_backward'][idx] = l
-        idx += 1
+    labels = [1]
     masks = torch.from_numpy(all_to_onehot(masks, labels)).float()
+
+    # Resize to 480p
     masks = mask_transform(masks)
     masks = masks.unsqueeze(2)
-
     info['labels'] = labels
-    print(info)
-
-    
+    print(masks.size())
+    print(images.size())
     return {
         'rgb': images,
         'gt': masks,
@@ -89,36 +76,14 @@ def propagate(data, prop_model):
     info = data['info']
     k = len(info['labels'])
     size = info['size']
-    gt_obj = info['gt_obj']
 
     torch.cuda.synchronize()
     process_begin = time.time()
 
-    # Frames with labels, but they are not exhaustively labeled
-    frames_with_gt = sorted(list(gt_obj.keys()))
+    processor = InferenceCore(prop_model, rgb, k)
+    processor.interact(msk[:,0], 0, rgb.shape[1])
 
-    processor = InferenceCore(prop_model, rgb, num_objects=k)
-    # min_idx tells us the starting point of propagation
-    # Propagating before there are labels is not useful
-    min_idx = 0
-    for i, frame_idx in enumerate(frames_with_gt):
-        # min_idx = min(frame_idx, min_idx)
-        # Note that there might be more than one label per frame
-        obj_idx = [gt_obj[frame_idx][0]]
-        # Map the possibly non-continuous labels into a continuous scheme
-        obj_idx = [info['label_convert'][o] for o in obj_idx]
-
-        # Append the background label
-        with_bg_msk = torch.cat([
-            1 - torch.sum(msk[:,frame_idx], dim=0, keepdim=True),
-            msk[:,frame_idx],
-        ], 0).cuda()
-
-        # We perform propagation from the current frame to the next frame with label
-        
-        processor.interact(with_bg_msk, frame_idx, frame_idx, rgb.shape[1], obj_idx)
-
-    # Do unpad -> upsample to original size (we made it 480p)
+    # Do unpad -> upsample to original size 
     out_masks = torch.zeros((processor.t, 1, *size), dtype=torch.uint8, device='cuda')
     for ti in range(processor.t):
         prob = processor.prob[:,ti]
@@ -133,12 +98,7 @@ def propagate(data, prop_model):
     
     out_masks = (out_masks.detach().cpu().numpy()[:,0]).astype(np.uint8)
 
-    # Remap the indices to the original domain
-    idx_masks = np.zeros_like(out_masks)
-    for i in range(1, k+1):
-        backward_idx = info['label_backward'][i].item()
-        idx_masks[out_masks==i] = backward_idx
-
+    torch.cuda.synchronize()
     total_process_time += time.time() - process_begin
     total_frames += out_masks.shape[0]
 

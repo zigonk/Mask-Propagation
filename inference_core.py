@@ -109,7 +109,7 @@ class InferenceCore:
         """
         mask, _ = pad_divide_by(mask.cuda(), 16)
 
-        self.prob[:, frame_idx] = aggregate_wbg(mask, keep_bg=False)
+        self.prob[:, frame_idx] = aggregate_wbg(mask, keep_bg=True)
 
         # KV pair for the interacting frame
         key_k, key_v = self.prop_net.memorize(self.images[:,frame_idx].cuda(), self.prob[1:,frame_idx].cuda())
