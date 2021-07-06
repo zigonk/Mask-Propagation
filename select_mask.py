@@ -52,6 +52,7 @@ def prepare_data(vid, eid, frame_ids):
 
     # Resize to 480p
     masks = mask_transform(masks)
+    images = images.unsqueeze(0)
     masks = masks.unsqueeze(2)
     info['labels'] = labels
     print(masks.size())

@@ -95,8 +95,6 @@ for data in progressbar(test_loader, max_value=len(test_loader), redirect_stdout
     size = info['size']
     eid = info['exp_id'][0]
     skip = data['skip']
-    print(rgb.shape)
-    print(msk.shape)
     print('Processing video ', name, '_', eid)
     if skip:
         print('No available mask')
